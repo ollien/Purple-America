@@ -4,7 +4,7 @@ window.onload = function(){
 	var coords;
 	
 	
-	$.get('/purpleAmerica',function(data){
+	$.get('/purpleAmerica'+location.search,function(data){
 		console.log("loaded");
 		coords = JSON.parse(data)['coords'];
 		var width = 0;

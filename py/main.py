@@ -10,21 +10,29 @@ staticPath = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())),'static/
 
 class PurpleAmericaWeb(object):
 	@cherrypy.expose
-	def index(self):
+	def index(self,**kwargs):
 		return file(staticPath+'index.html')
 class PurpleAmerica(object):
 	exposed = True
 	@cherrypy.tools.accept(media='text/plain')
-	def GET(self):
+	def GET(self,**kwargs):
 		configReader = ConfigReader()
 		configReader.readKeys()
 		keys = configReader.getKeys()
 		region = 'USA-county'
 		year = '2012'
-		if 'region' in keys:
-			regiion=keys['region']
-		if 'year' in keys:
-			year = keys['year']
+		if 'region' in kwargs:
+			if self.validRegion(kwargs['region']):
+				region = kwargs['region']
+		elif 'region' in keys:
+			if self.validRegion(keys['region']):
+				region=keys['region']
+		if 'year' in kwargs:
+			if self.validYear(int(kwargs['year'])):
+				year = kwargs['year']
+		elif 'year' in keys:
+			if self.validYear(int(keys['year'])):
+				year = keys['year']
 		areas = {}
 		#Read election data
 		if 'county' in region:
@@ -110,7 +118,14 @@ class PurpleAmerica(object):
 			return True
 		except ValueError:
 			return False
-			
+	def validRegion(self,region):
+		if len(glob(staticPath+'purple/'+region+".txt"))==1:
+			return True
+		return False
+	def validYear(self,year):
+		if year>=1960 and year%4==0:
+			return True
+		return False
 			
 			
 		
