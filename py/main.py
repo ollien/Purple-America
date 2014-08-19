@@ -4,7 +4,7 @@ import os.path
 from glob import glob
 import json
 from math import floor
-
+from configReader import ConfigReader
 staticRoot = os.path.dirname(os.path.abspath(os.getcwd()))
 staticPath = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())),'static/')
 
@@ -16,11 +16,19 @@ class PurpleAmerica(object):
 	exposed = True
 	@cherrypy.tools.accept(media='text/plain')
 	def GET(self):
+		configReader = ConfigReader()
+		configReader.readKeys()
+		keys = configReader.getKeys()
 		region = 'USA-county'
+		year = '2012'
+		if 'region' in keys:
+			regiion=keys['region']
+		if 'year' in keys:
+			year = keys['year']
 		areas = {}
 		#Read election data
 		if 'county' in region:
-			files = glob(staticPath+'purple/*2012.txt')
+			files = glob(staticPath+'purple/*'+year+'.txt')
 			for fileName in files:
 				f = open(fileName,'r')
 				areas.update(self.readReigion(f))
